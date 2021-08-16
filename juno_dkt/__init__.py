@@ -6,7 +6,9 @@ import torch
 from torch import nn, optim
 from torch.nn import functional as F
 from torch.utils.data import DataLoader, Dataset
-from utils import *
+from juno_dkt.utils import *
+
+eps = 1e-8
 
 class ItemEncoder:
 	def __init__(self, n_items=None, binary_only=False):

@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="juno-dkt", # Replace with your own username
-    version="0.8.4",
+    version="0.8.8",
     author="Juno Hwang",
     author_email="wnsdh10@snu.ac.kr",
     description="Scikit-learn style implementation of Deep Knowledge Tracing models based on pytorch.",
@@ -18,6 +18,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=['numpy','pandas','scikit-learn','tqdm']
+    install_requires=['numpy','pandas','scikit-learn','tqdm'],
     python_requires='>=3.6',
 )
