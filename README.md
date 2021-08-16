@@ -9,7 +9,15 @@ Scikit-learn style implementation of Deep Knowledge Tracing models based on pyto
 ## ASSISTment2015 데이터 예제 (Google Colab)
 
 `example/ASSISTment2015.ipynb`파일과 동일함
-https://colab.research.google.com/drive/1v-f7XKyfzyEwycpEa-z9kuMthRznw7zk?usp=sharing
+
+(https://colab.research.google.com/drive/1v-f7XKyfzyEwycpEa-z9kuMthRznw7zk?usp=sharing)
+
+### Result
+
+[figure](figure.png)
+
+Test score :  ROC AUC 0.73230  / Binary Cross Entropy 0.54384
+
 
 ## API Reference
 
@@ -67,6 +75,6 @@ _데이터에 대해 참값과 예측값을 반환함. (flattened)_
 
 ## Author Contact
 
-황준오(wnsdh10@snu.ac.kr)
+황준오 (wnsdh10@snu.ac.kr)
 
 서울대학교 물리교육과 데이터사이언스 연구실
