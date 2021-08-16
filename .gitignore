@@ -4,3 +4,4 @@ __pycache__/
 build/
 dist/
 juno_dkt.egg-info/
+main.py

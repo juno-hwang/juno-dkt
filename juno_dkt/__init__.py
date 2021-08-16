@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 from tqdm.auto import tqdm
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, roc_auc_score
 
 import torch
@@ -167,6 +169,28 @@ class DKT(nn.Module):
 		y_score = torch.cat(y_score).detach().cpu().numpy()
 		return y_true, y_score
 
+	def predict(self, data):
+		self.eval()
+		if type(data) == list:
+			loader = DataLoader(data, batch_size=64, collate_fn=collate, shuffle=False)
+			predictions = []
+
+			with torch.no_grad():
+				for i, data in enumerate(loader):
+					data = data.to(self.device)
+					delta = data[:,:, :self.n_items] + data[:,:, self.n_items:]
+					length = delta.sum(axis=-1).sum(axis=0).type(torch.IntTensor)
+
+					y_ = self(data)
+					for i in range(y_.shape[1]):
+						predictions.append( y_[:length[i], i, :].detach().cpu().numpy() )
+
+			return predictions
+
+		elif type(data) == torch.Tensor:
+			y_ = self(torch.unsqueeze(data.to(self.device), 1))
+			return y_.detach().cpu().numpy()[:,0,:]
+
 	def roc_auc_score(self, batches):
 		# Note : The score is evaluated on binary y_true items only.
 		y_true, y_score = self.y_true_and_score(batches)
@@ -178,14 +202,3 @@ class DKT(nn.Module):
 		y_true, y_score = self.y_true_and_score(batches)
 		bce = y_true*np.log(y_score) + (1-y_true)*np.log(1-y_score)
 		return -np.mean(bce)
-
-
-if __name__ == "__main__":
-	df = pd.read_csv('dataset.csv')
-	print(df.head())
-
-	enc = ItemEncoder(binary_only=True)
-	batches = enc.transform(df.user_id, df.sequence_id, df.correct)
-
-	model = DKT(n_hidden=50, batch_size=128, lr=0.001)
-	model.fit(batches, n_iter=10, test_set=batches)

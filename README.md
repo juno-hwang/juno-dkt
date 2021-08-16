@@ -71,7 +71,11 @@ _데이터에 대한 binary cross entropy 점수를 반환함_
 
 _데이터에 대해 참값과 예측값을 반환함. (flattened)_
 * `batches` _(list of torch.Tensor)_ - ItemEncoder에 의해 변환된 데이터
-* **return** `y_true, y_score` _(np.array, np.array)_ - 입력된 데이터의 정오답 참값과 예측값에 대해 나열된 `np.array`형태의 데이터
+* **return** `y_true, y_score` _(np.ndarray, np.ndarray)_ - 입력된 데이터의 정오답 참값과 예측값에 대해 나열된 `np.ndarray`형태의 데이터
+
+**DKT.predict(data)**
+* `data` _(list of torch.Tensor, or torch.Tensor)_ - ItemEncoder로 변환된 학생 데이터의 리스트, 혹은 개별 학생의 데이터.
+* **return** `predictions` _(list of np.ndarray, or np.ndarray)_ 문항반응 예측의 변화를 나타낸 개별 `np.ndarray` 혹은 그 리스트. 각 학생에 대한 `np.ndarray`는 (학생의 응답 수, 전체 문항수)의 크기를 가진다.
 
 ## Author Contact
 
