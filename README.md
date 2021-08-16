@@ -4,6 +4,7 @@ Scikit-learn style implementation of Deep Knowledge Tracing models based on pyto
 ## 설치 방법
 1. 운영체제와 GPU 사용 여부 등을 고려하여 `pytorch`를 설치한다.(https://pytorch.org/get-started/locally/) (Google Colab에서 사용시 생략 가능)
 2. 터미널 혹은 명령 프롬프트에서 `pip install juno-dkt`를 실행한다.
+3. `juno_dkt`를 import 하여 사용한다. *(pip 패키지 이름은 '-'로 연결되어 있으나, import 할때의 패키지 이름은 '_'로 연결되어 있음에 주의)*
 
 ## ASSISTment2015 데이터 예제 (Google Colab)
 
@@ -67,4 +68,5 @@ _데이터에 대해 참값과 예측값을 반환함. (flattened)_
 ## Author Contact
 
 황준오(wnsdh10@snu.ac.kr)
+
 서울대학교 물리교육과 데이터사이언스 연구실
