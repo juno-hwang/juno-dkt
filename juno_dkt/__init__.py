@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import networkx as nx
 from tqdm.auto import tqdm
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_curve, roc_auc_score
@@ -202,3 +203,28 @@ class DKT(nn.Module):
 		y_true, y_score = self.y_true_and_score(batches)
 		bce = y_true*np.log(y_score) + (1-y_true)*np.log(1-y_score)
 		return -np.mean(bce)
+
+	def influence_matrix(self):
+		self.eval()
+		x = torch.zeros(size=(1, self.n_items, self.n_items*2)).to(self.device)
+		for n in range(self.n_items):
+			x[0, n, n] = 1
+
+		with torch.no_grad():
+			y_ = self(x)[0].detach().cpu().numpy()
+
+		matrix = y_ / np.sum(y_, axis=0)
+		return matrix
+
+	def graph(self, threshold=0.1):
+		mat = self.influence_matrix()
+		edges = []
+		for i in range(self.n_items):
+			for j in range(self.n_items):
+				if i!=j and mat[i,j] >= threshold and mat[i,j] > mat[j,i]:
+					edges.append((i,j, mat[i,j]))
+
+		print(edges)
+		g = nx.DiGraph()
+		g.add_weighted_edges_from(edges)
+		return g

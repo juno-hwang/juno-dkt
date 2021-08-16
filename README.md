@@ -14,7 +14,7 @@ Scikit-learn style implementation of Deep Knowledge Tracing models based on pyto
 
 ### Result
 
-[figure](figure.png)
+![figure](figure.png)
 
 Test score :  ROC AUC 0.73230  / Binary Cross Entropy 0.54384
 
@@ -76,6 +76,17 @@ _데이터에 대해 참값과 예측값을 반환함. (flattened)_
 **DKT.predict(data)**
 * `data` _(list of torch.Tensor, or torch.Tensor)_ - ItemEncoder로 변환된 학생 데이터의 리스트, 혹은 개별 학생의 데이터.
 * **return** `predictions` _(list of np.ndarray, or np.ndarray)_ 문항반응 예측의 변화를 나타낸 개별 `np.ndarray` 혹은 그 리스트. 각 학생에 대한 `np.ndarray`는 (학생의 응답 수, 전체 문항수)의 크기를 가진다.
+
+**DKT.influence_matrix()**
+
+_모델의 연관 행렬을 `np.ndarray` 형식으로 반환한다._
+* **return** `matrix` _(np.ndarray)_ - 연관 행렬 $J$
+
+**DKT.graph(threshold=0.1)**
+
+_모델의 지식공간 구조에 대한 그래프를 `networkx`패키지의 `nx.DiGraph`형식으로 반환한다._
+* `threshold` _(float, Default:0,1)_ - 그래프의 연결 여부를 결정할 $J_{ij}$의 임계값
+* **return** `g` _(nx.DiGraph)_ - 지식공간 그래프
 
 ## Author Contact
 
