@@ -1,8 +1,0 @@
-README.md
-setup.py
-juno-dkt/__init__.py
-juno-dkt/utils.py
-juno_dkt.egg-info/PKG-INFO
-juno_dkt.egg-info/SOURCES.txt
-juno_dkt.egg-info/dependency_links.txt
-juno_dkt.egg-info/top_level.txt
