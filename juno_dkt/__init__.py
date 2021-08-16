@@ -78,17 +78,14 @@ class ItemEncoder:
 		return batches
 
 class DKT(nn.Module):
-	def __init__(self, n_hidden, batch_size, lr, n_embedding=None, device=None):
+	def __init__(self, n_hidden, batch_size, lr, n_embedding=None, device='cpu'):
 		super().__init__()
 		self.n_hidden = n_hidden
 		self.lr = lr
 		self.batch_size = batch_size
 		self.n_embedding = n_embedding
-		if device == None:
-			self.device = torch.device('cpu')
-		else :
-			self.device = device
-			self.to(device)
+		self.device = torch.device(device)
+		self.to(device)
 
 	def forward(self, x):
 		h, c = self.lstm(x)
@@ -134,7 +131,7 @@ class DKT(nn.Module):
 				loss.backward()
 				self.opt.step()
 				loss_history.append(loss.item())
-				iteration.set_description_str('BCE loss : %.4f'%loss_history[-1] if len(loss_history) else '')
+				iteration.set_description_str('loss : %.4f'%loss_history[-1] if len(loss_history) else '')
 
 			if test_set != None:
 				print('Test score : ',
