@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 from tqdm.auto import tqdm
+from matplotlib import pyplot as plt
 from sklearn.metrics import roc_curve, roc_auc_score
 
 import torch
@@ -149,7 +151,7 @@ class DKT(nn.Module):
 		bce = (bce*delta).sum(axis=-1)
 		return torch.masked_select(bce, mask).mean()
 
-	def y_true_and_score(self, batches):
+	def _y_true_and_score(self, batches):
 		self.eval()
 		loader = DataLoader(batches, batch_size=64, collate_fn=collate)
 		y_true, y_score = [], []
@@ -170,13 +172,13 @@ class DKT(nn.Module):
 
 	def roc_auc_score(self, batches):
 		# Note : The score is evaluated on binary y_true items only.
-		y_true, y_score = self.y_true_and_score(batches)
+		y_true, y_score = self._y_true_and_score(batches)
 		idx = np.floor(y_true) == y_true
 		return roc_auc_score(y_true[idx], y_score[idx])
 
 	def bce_score(self, batches):
 		# Note : The score is evaluated on binary y_true items only.
-		y_true, y_score = self.y_true_and_score(batches)
+		y_true, y_score = self._y_true_and_score(batches)
 		bce = y_true*np.log(y_score) + (1-y_true)*np.log(1-y_score)
 		return -np.mean(bce)
 
