@@ -5,7 +5,9 @@ Scikit-learn style implementation of Deep Knowledge Tracing models based on pyto
 1. 운영체제와 GPU 사용 여부 등을 고려하여 `pytorch`를 설치한다.(https://pytorch.org/get-started/locally/) (Google Colab에서 사용시 생략 가능)
 2. 터미널 혹은 명령 프롬프트에서 `pip install juno-dkt`를 실행한다.
 
-## ASSISTMment2015 데이터 예제 (Google Colab)
+## ASSISTment2015 데이터 예제 (Google Colab)
+
+`example/ASSISTment2015.ipynb`파일과 동일함
 https://colab.research.google.com/drive/1v-f7XKyfzyEwycpEa-z9kuMthRznw7zk?usp=sharing
 
 ## API Reference
@@ -61,3 +63,8 @@ _데이터에 대한 binary cross entropy 점수를 반환함_
 _데이터에 대해 참값과 예측값을 반환함. (flattened)_
 * `batches` _(list of torch.Tensor)_ - ItemEncoder에 의해 변환된 데이터
 * **return** `y_true, y_score` _(np.array, np.array)_ - 입력된 데이터의 정오답 참값과 예측값에 대해 나열된 `np.array`형태의 데이터
+
+## Author Contact
+
+황준오(wnsdh10@snu.ac.kr)
+서울대학교 물리교육과 데이터사이언스 연구실
