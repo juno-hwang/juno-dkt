@@ -5,7 +5,7 @@ with open("pypiREADME.md", "r") as fh:
 
 setuptools.setup(
     name="juno-dkt", # Replace with your own username
-    version="0.8.12",
+    version="0.8.15",
     author="Juno Hwang",
     author_email="wnsdh10@snu.ac.kr",
     description="Scikit-learn style implementation of Deep Knowledge Tracing models based on pytorch.",

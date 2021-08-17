@@ -82,11 +82,15 @@ _데이터에 대해 참값과 예측값을 반환함. (flattened)_
 _모델의 연관 행렬을 `np.ndarray` 형식으로 반환한다._
 * **return** `matrix` _(np.ndarray)_ - 연관 행렬 $J$
 
-**DKT.graph(threshold=0.1)**
+**DKT.graph(item_encoder, method='conditional', use_label=False, threshold=0.1, pair_threshold=0)**
 
-_모델의 지식공간 구조에 대한 그래프를 `networkx`패키지의 `nx.DiGraph`형식으로 반환한다._
-* `threshold` _(float, Default:0,1)_ - 그래프의 연결 여부를 결정할 $J_{ij}$의 임계값
-* **return** `g` _(nx.DiGraph)_ - 지식공간 그래프
+_모델의 지식 공간의 그래프를 `networkx.DiGraph` 형식으로 반환한다._
+* `item_encoder` *(ItemEncoder)* - 데이터를 변환할 때 사용된 `ItemEncoder` 객체
+* `method` _(str, Default:'conditional')_ - 그래프의 가중치를 부여하는 방법. 기본값인 `'conditional'`일 경우, 한 문항에서 다른 문항으로 전이될 확률(transition probability)에 모델이 추정한 점수를 곱하여 사용. `'transition'`일 경우, 전이 확률만을 사용.
+* `use_label` _(bool, Default:False)_ - `ItemEncoder`에 입력된 원본 라벨을 사용할 것인지에 대한 여부. 기본값인 `False`로 설정시, 자연수 인덱스로 대체됨.
+* `threshold` _(float, Default:0.1)_ - 그래프의 엣지를 생성하기 위한 임계값. 원본 논문에서는 Khan dataset에 대해 0.1을 사용함.
+* `pair_threshold` _(float, Default:0)_ - 엣지가 생성되기 위해 문항의 {A, B} 순서쌍이 가져야 할 최소 빈도. 원본 논문에서는 Khan dataset에 대해 0.01을 사용함.
+* **return** `g` _(networkx.DiGraph)_ - 가중치가 부여된 유향 그래프 객체
 
 ## Author Contact
 

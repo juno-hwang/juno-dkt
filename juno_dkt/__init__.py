@@ -25,8 +25,8 @@ class ItemEncoder:
 			items = np.array(items[idx])
 			answers = np.array(answers[idx])
 		print('[1/3] One-hot encoding item responces...')
-		encoded = self.one_hot_encode(items, answers)
-		batches = self.batchify(students, encoded)
+		encoded, idxs = self.one_hot_encode(items, answers)
+		batches = self.batchify(students, encoded, idxs)
 		print('Number of batches(students) : ', len(batches))
 		return batches
 
@@ -34,20 +34,20 @@ class ItemEncoder:
 		if self.n_items == None :
 			self.n_items = len(list(set(items)))
 
-		item_set = list(set(items))
-		self.item_ids = [0] * self.n_items
-		self.item_ids[:len(item_set)] = item_set
+		self.item_ids = list(set(items))
 		item_id_to_idx = {}
-		for iid in item_set:
+		for iid in self.item_ids:
 			item_id_to_idx[iid] = self.item_ids.index(iid)
 
 		encoded = np.zeros((len(items), self.n_items*2))
+		idxs = []
 		for i in tqdm(range(len(items))):
 			idx = item_id_to_idx[items[i]]
 			encoded[i, idx] += answers[i]
 			encoded[i, idx + self.n_items] += 1 - answers[i]
+			idxs.append(idx)
 
-		return encoded
+		return encoded, idxs
 
 	def inverse_transform(self, encoded):
 		if self.n_items == None:
@@ -61,22 +61,31 @@ class ItemEncoder:
 		# 추가해야함
 		pass
 
-	def batchify(self, student_id, encoded):
+	def batchify(self, student_id, encoded, idxs):
 		student_set = list(set(student_id))
 		student_id_to_idx = {}
 		for sid in student_set:
 			student_id_to_idx[sid] = student_set.index(sid)
 
 		batches = [ [] for i in range(len(student_set)) ]
+		idxs_batches = [ [] for i in range(len(student_set)) ]
+		transition_count = np.zeros((self.n_items, self.n_items))
 
 		print('[2/3] Batchifying one-hot vectors...')
 		for i in tqdm(range(len(student_id))) :
 			student_idx = student_id_to_idx[student_id[i]]
 			batches[student_idx].append( encoded[i] )
+			idxs_batches[student_idx].append( idxs[i] )
+			if len(idxs_batches[student_idx]) > 1:
+				i = idxs_batches[student_idx][-2]
+				j = idxs_batches[student_idx][-1]
+				if i != j:
+					transition_count[i,j] += 1
 
 		print('[3/3] Converting type into torch.Tensor...')
 		for i, b in enumerate(tqdm(batches)):
 			batches[i] = torch.Tensor(b).view(-1,2*self.n_items)
+		self.transition_count = transition_count
 
 		return batches
 
@@ -205,26 +214,51 @@ class DKT(nn.Module):
 		return -np.mean(bce)
 
 	def influence_matrix(self):
+		matrix = self._conditional_predict_matrix()
+		matrix = matrix / np.sum(matrix, axis=0)
+		return matrix
+
+	def _conditional_predict_matrix(self):
 		self.eval()
 		x = torch.zeros(size=(1, self.n_items, self.n_items*2)).to(self.device)
 		for n in range(self.n_items):
 			x[0, n, n] = 1
 
 		with torch.no_grad():
-			y_ = self(x)[0].detach().cpu().numpy()
+			return self(x)[0].detach().cpu().numpy()
 
-		matrix = y_ / np.sum(y_, axis=0)
-		return matrix
+	def graph(self, item_encoder, method='conditional', use_label=False, threshold=0.1, pair_threshold=0):
+		count = item_encoder.transition_count
+		mask = count > pair_threshold
 
-	def graph(self, threshold=0.1):
-		mat = self.influence_matrix()
+		if method == 'transition':
+			mat = item_encoder.transition_count.T
+			mat /= np.sum(mat, axis=0)
+			mat = mat.T * mask
+		elif method == 'conditional':
+			cond = self._conditional_predict_matrix()
+			mat = item_encoder.transition_count.T
+			mat /= np.sum(mat, axis=0)
+			mat = mat.T * cond * mask
+		else:
+			print('[Warning] Wrong method entered.')
+			return
+
 		edges = []
 		for i in range(self.n_items):
 			for j in range(self.n_items):
 				if i!=j and mat[i,j] >= threshold and mat[i,j] > mat[j,i]:
-					edges.append((i,j, mat[i,j]))
+					if use_label:
+						edges.append((item_encoder.item_ids[i], item_encoder.item_ids[j], mat[i,j]))
+					else:
+						edges.append((i,j, mat[i,j]))
 
-		print(edges)
+		print(np.mean(mat), np.std(mat), np.max(mat))
+
 		g = nx.DiGraph()
+		if use_label:
+			g.add_nodes_from(item_encoder.item_ids)
+		else :
+			g.add_nodes_from(range(self.n_items))
 		g.add_weighted_edges_from(edges)
 		return g
